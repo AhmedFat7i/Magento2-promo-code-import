@@ -8,7 +8,12 @@
 
 namespace Jworks\PromoCode\Model\Import;
 
+use Magento\Framework\App\RequestInterface;
 use Magento\Framework\App\ResourceConnection;
+use Magento\Framework\File\Csv;
+use Magento\Framework\ObjectManagerInterface;
+use Magento\Framework\Registry;
+use Magento\Framework\Stdlib\DateTime\DateTime;
 
 /**
  * URL rewrite CSV Import Handler
@@ -22,67 +27,34 @@ class CsvImportHandler
     protected $_connection;
 
     /**
-     * CSV Processor
-     * @var \Magento\Framework\File\Csv
-     */
-    protected $csvProcessor;
-
-    /**
      * Customer entity DB table name.
      * @var string
      */
     protected $_entityTable;
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime\DateTime
-     */
-    protected $date;
-
-    /**
-     * @var \Magento\Framework\Stdlib\DateTime
-     */
-    protected $dateTime;
-    /**
-     * @var \Magento\Framework\ObjectManagerInterface
-     */
-    protected $_objectManager;
-    /**
-     * Core registry
-     * @var \Magento\Framework\Registry
-     */
-    protected $_coreRegistry = null;
     /**
      * @var \Magento\SalesRule\Model\Rule
      */
     protected $_rule;
 
     /**
-     * @param \Magento\Framework\File\Csv $csvProcessor
-     * @param ResourceConnection $resource
-     * @param \Magento\SalesRule\Helper\Coupon $salesRuleCoupon
-     * @param \Magento\SalesRule\Model\CouponFactory $couponFactory
-     * @param \Magento\Framework\Stdlib\DateTime\DateTime $date
+     * @param Csv                                $csvProcessor
+     * @param ObjectManagerInterface             $_objectManager
+     * @param RequestInterface                   $_request
+     * @param ResourceConnection                 $resource
+     * @param Registry                           $_coreRegistry
+     * @param DateTime                           $date
      * @param \Magento\Framework\Stdlib\DateTime $dateTime
      */
     public function __construct(
-        \Magento\Framework\File\Csv $csvProcessor,
-        \Magento\Framework\ObjectManagerInterface $objectManager,
-        \Magento\Framework\App\RequestInterface $request,
+        protected \Magento\Framework\File\Csv $csvProcessor,
+        protected \Magento\Framework\ObjectManagerInterface $_objectManager,
+        protected \Magento\Framework\App\RequestInterface $_request,
         ResourceConnection $resource,
-        \Magento\Framework\Registry $coreRegistry,
-        \Magento\Framework\Stdlib\DateTime\DateTime $date,
-        \Magento\Framework\Stdlib\DateTime $dateTime
+        protected \Magento\Framework\Registry $_coreRegistry,
+        protected \Magento\Framework\Stdlib\DateTime\DateTime $date,
+        protected \Magento\Framework\Stdlib\DateTime $dateTime
     ) {
-        $this->_objectManager = $objectManager;
-        $this->csvProcessor = $csvProcessor;
-        $this->_coreRegistry = $coreRegistry;
-        $this->_request = $request;
-        $this->_connection =
-            isset($data['connection']) ?
-                $data['connection'] :
-                $resource->getConnection();
-        $this->date = $date;
-        $this->dateTime = $dateTime;
+        $this->_connection = $data['connection'] ?? $resource->getConnection();
         $this->_entityTable = 'salesrule_coupon';
 
     }
